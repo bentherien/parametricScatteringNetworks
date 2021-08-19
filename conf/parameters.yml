@@ -1,0 +1,64 @@
+#data preprocessing:
+general:
+  cores: 4
+  seed:    # seed for dataset subselection and random initialization
+  save_metric: False
+
+mlflow:
+  tracking_uri: 
+  experiment_name: 'Cifar Experiment'
+
+dataset:
+  name: 'cifar' # choices=['cifar', 'kth', 'x-ray']
+  num_classes: 10
+  train_batch_size: 100
+  test_batch_size: 512
+  train_sample_num: 100  #total train samples
+  test_sample_num: 10000
+  data_root: 
+  data_folder: 
+  height:  32   
+  width:  32  
+  augment: 'autoaugment' #choices=['autoaugment','original-cifar','noaugment','glico']
+  sample: 
+  accum_step_multiple: 128
+# kymatio 
+
+scattering:
+  J: 2
+  max_order: 2
+  lr_scattering: 0.1
+  lr_orientation: 0.1
+  init_params: 'Tight-Frame' # 'Random' or 'Tight-Frame'
+  learnable: False # True if learnable
+  second_order: False
+  architecture: 'scattering'
+  filter_video: True
+  param_distance: True
+
+optim: 
+  name: 'sgd' #choices=['adam', 'sgd']
+  lr: 0.1
+  weight_decay: 0.0005
+  momentum: 0.9
+  max_lr: 0.06 #highest lr we can
+  scheduler: 'OneCycleLR' #choices=['CosineAnnealingLR','OneCycleLR','LambdaLR','StepLR','NoScheduler']
+  div_factor: 25 # so far, best results with 25 and maxlr = 0.05
+  three_phase: False 
+  phase_num:
+  T_max: 
+  phase_ends:
+
+model:
+  name: 'linear_layer' # choices=['cnn', 'mlp', 'linear_layer']
+  width: 8   # width factor for resnet
+  epoch: 5
+  step_test: 25
+  loss: 'cross-entropy' # choices=['cross-entropy', 'cosine', 'cross-entropy-accum']
+  save: False
+
+
+
+
+
+

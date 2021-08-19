@@ -1,0 +1,25 @@
+name: parametricSN
+channels:
+- conda-forge
+- pytorch
+- defaults
+dependencies:
+- python==3.7
+- pip
+- nb_conda
+- nb_conda_kernels
+- scikit-learn
+- matplotlib
+- jupyterlab
+- pandas
+- mlflow
+- tqdm
+- pytorch-gpu>=1.9
+- torchvision
+- tensorflow==1.14.0
+- opencv
+- kaggle
+- pip:
+  - graphviz
+  - ipywidgets
+  - nbdev>=0.2.12

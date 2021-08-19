@@ -1,0 +1,63 @@
+#data preprocessing:
+general:
+  cores: 4
+  seed:    # seed for dataset subselection and random initialization
+  save_metric: False
+
+mlflow:
+  tracking_uri: 
+  experiment_name: 'Xray Experiment'
+
+dataset:
+  name: 'x-ray'
+  num_classes: 2
+  train_batch_size: 128
+  test_batch_size: 128
+  train_sample_num: 500  #total train samples
+  test_sample_num: 400
+  data_root: 
+  data_folder: 
+  height:  224  
+  width:  224  
+  augment: 'original-cifar' #choices=['autoaugment','original-cifar','noaugment','glico']
+  sample:
+  accum_step_multiple: 128
+
+# kymatio 
+scattering:
+  J: 4
+  max_order: 2
+  lr_scattering: 0.01
+  lr_orientation: 0.01
+  init_params: 'Tight-Frame' # 'Random' or 'Tight-Frame'
+  learnable: True # True if learnable
+  second_order: False
+  architecture: 'scattering'
+  filter_video: False
+  param_distance: False
+
+optim: 
+  name: 'sgd' #choices=['adam', 'sgd']
+  lr: 0.01
+  weight_decay: 0.0005
+  momentum: 0.9
+  max_lr: 0.01 #highest lr we can
+  scheduler: 'OneCycleLR' #choices=['CosineAnnealingLR','OneCycleLR','LambdaLR','StepLR','NoScheduler']
+  div_factor: 25 # so far, best results with 25 and maxlr = 0.05
+  three_phase: False 
+  phase_num: 2
+  alternating: False
+  T_max: 
+
+model:
+  name: 'linear_layer' # choices=['cnn', 'mlp', 'linear_layer', 'resnet50']
+  width: 8   # widthd factor for resnet
+  epoch: 2
+  step_test: 25
+  loss: 'cross-entropy' # choices=['cross-entropy', cross-entropy-accum', 'cosine']
+  save: False
+
+  
+
+
+
