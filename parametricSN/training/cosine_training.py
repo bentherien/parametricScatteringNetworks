@@ -51,14 +51,10 @@ def train(model, device, train_loader, scheduler, optimizer, epoch, accum_step_m
         cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
         loss = (1 - cos(target_one_hot, output)).mean()
         loss.backward()
-
-        model.scatteringBase.saveFilterGrads(scatteringActive=True) 
         optimizer.step()
-        model.scatteringBase.saveFilterValues(scatteringActive=True) 
 
         if scheduler != None:
             scheduler.step()
-
 
         pred = output.max(1, keepdim=True)[1] # get the index of the max log-probabilityd
         correct += pred.eq(target.view_as(pred)).sum().item()

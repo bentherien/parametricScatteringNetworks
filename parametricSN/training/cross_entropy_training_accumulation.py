@@ -49,10 +49,7 @@ def train(model, device, train_loader, scheduler, optimizer, epoch, accum_step_m
         tracker += len(target)
 
         if (batch_idx + 1) % accum_step_multiple == 0:
-            model.scatteringBase.saveFilterGrads(scatteringActive=True) 
             optimizer.step()
-            model.scatteringBase.saveFilterValues(scatteringActive=True) 
-            
             optimizer.zero_grad()
             if scheduler != None:
                 try:
@@ -65,9 +62,7 @@ def train(model, device, train_loader, scheduler, optimizer, epoch, accum_step_m
             correct += pred.eq(target.view_as(pred)).sum().item()
             train_loss += F.cross_entropy(output, target, reduction='sum').item() # sum up batch loss
         
-    model.scatteringBase.saveFilterGrads(scatteringActive=True) 
     optimizer.step()
-    model.scatteringBase.saveFilterValues(scatteringActive=True)  
     train_loss /= len(train_loader.dataset)
     train_accuracy = 100. * correct / len(train_loader.dataset)
 

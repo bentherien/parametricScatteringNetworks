@@ -19,9 +19,9 @@ class InvalidArchitectureError(Exception):
     pass
 
 
-def baseModelFactory(architecture, J, N, M, second_order, initialization, seed, device, 
-                     learnable=True, lr_orientation=0.1, lr_scattering=0.1, filter_video=False,
-                     use_cuda=True):
+def baseModelFactory(architecture, J, N, M, second_order, initialization, seed, 
+                     learnable=True, lr_orientation=0.1, lr_scattering=0.1,
+                     filter_video=False, parameterization='canonical'):
     """Factory for the creation of the first layer of a hybrid model
     
         parameters: 
@@ -31,12 +31,10 @@ def baseModelFactory(architecture, J, N, M, second_order, initialization, seed, 
             second_order -- 
             initilization -- the type of init: ['Tight-Frame' or 'Random']
             seed -- the random seed used to initialize the parameters
-            device -- the device to place weights on
             learnable -- should the filters be learnable parameters of this model
             lr_orientation -- learning rate for the orientation of the scattering parameters
             lr_scattering -- learning rate for scattering parameters other than orientation                 
             monitor_filters -- boolean indicating whether to track filter distances from initialization
-            use_cuda -- True if using GPU
     """
 
     if architecture.lower() == 'identity':
@@ -54,8 +52,7 @@ def baseModelFactory(architecture, J, N, M, second_order, initialization, seed, 
             lr_orientation=lr_orientation,
             lr_scattering=lr_scattering,
             filter_video=filter_video,
-            device=device,
-            use_cuda=use_cuda
+            parameterization= parameterization
         )
 
     else:
@@ -64,7 +61,7 @@ def baseModelFactory(architecture, J, N, M, second_order, initialization, seed, 
 
 
 
-def topModelFactory(base, architecture, num_classes, width=8, average=False, use_cuda=True):
+def topModelFactory(base, architecture, num_classes, width=8, average=False):
     """Factory for the creation of seconds part of a hybrid model
     
     parameters:
@@ -74,7 +71,6 @@ def topModelFactory(base, architecture, num_classes, width=8, average=False, use
         width        -- the width of the model
         average      -- boolean indicating whether to average the spatial information 
                         of the scattering coefficients
-        use_cuda     -- boolean indicating whether to use GPU
     """
 
     if architecture.lower() == 'cnn':
@@ -85,8 +81,7 @@ def topModelFactory(base, architecture, num_classes, width=8, average=False, use
     elif architecture.lower() == 'mlp':
         return sn_MLP(
             num_classes=num_classes, n_coefficients=base.n_coefficients, 
-            M_coefficient=base.M_coefficient, N_coefficient=base.N_coefficient, 
-            use_cuda=use_cuda
+            M_coefficient=base.M_coefficient, N_coefficient=base.N_coefficient
         )
 
     elif architecture.lower() == 'linear_layer':

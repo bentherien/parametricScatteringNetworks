@@ -8,7 +8,6 @@ Functions:
 """
 
 import torch
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import linear_sum_assignment
@@ -26,9 +25,9 @@ def get_filters_visualization(psi, J, L, mode ='fourier'):
     returns:
         f -- figure/plot
     """
-    n_filters =0
+    n_filters = 0
     for j in range(2, J+1):
-        n_filters+=  j* L
+        n_filters += j*L
     num_rows = int(n_filters/L) 
     num_col = L
     f, axarr = plt.subplots(num_rows, num_col, figsize=(20, 2*num_rows))
@@ -99,18 +98,12 @@ def getAllFilters(psi, totalCount, scale, mode):
                 tempRow = getOneFilter(psi, count, scale, mode)
         else:
             tempRow = np.concatenate([tempRow, getOneFilter(psi, count, scale, mode)], axis=1)
-
     rows.append(tempRow)
-
-
     temp = np.concatenate(rows, axis=0)
     return temp
 
 
-
-
-
-def getAngleDistance(one,two):
+def getAngleDistance(one, two):
     """returns the angle of arc between two points on the unit circle"""
     if one < 0 or (2 * np.pi) < one or two < 0 or (2 * np.pi) < two:
         raise Exception
@@ -130,45 +123,29 @@ def getAngleDistance(one,two):
     return diff
 
 
-def compareParams(params1,angles1,params2,angles2,device):
-    """Method to checking the minimal distance between initialized filters and learned ones
-    
-    Euclidean distances are calculated between each filter for parameters other than orientations
-    for orientations, we calculate the arc between both points on the unit circle. Then, the sum of
-    these two distances becomes the distance between two filters. Finally, we use munkre's assignment 
-    algorithm to compute the optimal match (I.E. the one that minizes total distance)   
+from parametricSN.models.create_filters import morlets
 
-    parameters:
-        params1 -- first set of parameters compared
-        angles1 -- angles associated to the first set of parameters
-        params2 -- second set of parameters compared
-        angles2 -- angles associated to the second set of parameters
-        device  -- torch device to use
+def create_filter(theta,slant,xi,sigma):
+    orientations = np.array([theta]) 
+    slants = np.array([slant])
+    xis = np.array([xi])
+    sigmas = np.array([sigma])
 
-    return: 
-        minimal distance
-    """
-    with torch.no_grad():
-        groupDistances = torch.cdist(params1,params2)
-        angleDistances = torch.zeros(groupDistances.shape, device=device)
-        avoidZero = torch.zeros(groupDistances.shape, device=device) + 0.0000000001
+    xis = torch.tensor(xis, dtype=torch.float32)
+    sigmas = torch.tensor(sigmas, dtype=torch.float32)
+    slants = torch.tensor(slants, dtype=torch.float32)
+    orientations = torch.tensor(orientations, dtype=torch.float32)  
 
-        for i in range(angleDistances.size(0)):
-            for j in range(angleDistances.size(1)):
-                angleDistances[i,j] = getAngleDistance(angles1[i],angles2[j])
-
-        distances = groupDistances + angleDistances + avoidZero
-
-        distNumpy = distances.cpu().numpy()
-        row_ind, col_ind = linear_sum_assignment(distNumpy, maximize=False)
+    shape = (32, 32,)
+    ranges = [torch.arange(-(s // 2), -(s // 2) + s, dtype=torch.float) for s in shape]
+    grid = torch.stack(torch.meshgrid(*ranges), 0)
+    wavelet = morlets(grid, orientations, xis, sigmas, slants)
+    return wavelet
 
 
-        return distNumpy[row_ind, col_ind].sum()
-
-
-def vizMatches(params1,angles1,params2,angles2,row_ind,col_ind,device):
+def vizMatches(params1, angles1, params2, angles2, row_ind, col_ind):
     """ Method used to visualize matches from the assignment algorithm"""
-    def vizWavelet(wavelet,mode):
+    def vizWavelet(wavelet, mode):
         if mode =='fourier':
             x = np.fft.fftshift(wavelet.squeeze().cpu().detach().numpy()).real
         elif mode == 'real':
@@ -184,16 +161,12 @@ def vizMatches(params1,angles1,params2,angles2,row_ind,col_ind,device):
     mode = 'fourier'
     num_col = 8
     num_rows = int(len(angles1)/num_col) * 2
-
-    # print(num_rows, num_col)
     
     f, axarr = plt.subplots(num_rows, num_col, figsize=(20, 2*num_rows))
     start_row = 0
     for indx in range(len(row_ind)):
         i = int(indx/num_col) * 2 
         j = indx % num_col
-
-        # print("i:{}j:{}".format(i,j))
 
         tempWavelet = create_filter(
             theta=angles1[row_ind[indx]].cpu().item(),
@@ -218,7 +191,6 @@ def vizMatches(params1,angles1,params2,angles2,row_ind,col_ind,device):
         )
         x = vizWavelet(mode=mode, wavelet=tempWavelet)
         i+=1
-        # print("i:{}j:{}".format(i,j))
         a = np.abs(x).max()
         axarr[i,j].imshow(x, vmin=-a, vmax=a)
         axarr[i,j].set_title(f"Match {indx} Fixed")
@@ -231,35 +203,7 @@ def vizMatches(params1,angles1,params2,angles2,row_ind,col_ind,device):
     return f
 
 
-
-
-from parametricSN.models.create_filters import morlets
-
-def create_filter(theta,slant,xi,sigma):
-    n_filters = 1
-    device = None
-
-    orientations = np.array([theta]) 
-    slants = np.array([slant])
-    xis = np.array([xi])
-    sigmas = np.array([sigma])
-
-    xis = torch.tensor(xis, dtype=torch.float32, device=device)
-    sigmas = torch.tensor(sigmas, dtype=torch.float32, device=device)
-    slants = torch.tensor(slants, dtype=torch.float32, device=device)
-    orientations = torch.tensor(orientations, dtype=torch.float32, device=device)  
-
-    shape = (32, 32,)
-    ranges = [torch.arange(-(s // 2), -(s // 2) + s, device=device, dtype=torch.float) for s in shape]
-    grid = torch.stack(torch.meshgrid(*ranges), 0)
-    wavelet = morlets(grid, orientations, xis, sigmas, slants, device=device)
-    
-    return wavelet
-
-
-
-
-def compareParamsVisualization(params1,angles1,params2,angles2,device):
+def compareParamsVisualization(params1, angles1, params2, angles2):
     """Method to checking the minimal distance between initialized filters and learned ones
     
     Euclidean distances are calculated between each filter for parameters other than orientations
@@ -272,15 +216,48 @@ def compareParamsVisualization(params1,angles1,params2,angles2,device):
         angles1 -- angles associated to the first set of parameters
         params2 -- second set of parameters compared
         angles2 -- angles associated to the second set of parameters
-        device  -- torch device to use
 
     return: 
         minimal distance
     """
     with torch.no_grad():
         groupDistances = torch.cdist(params1,params2)
-        angleDistances = torch.zeros(groupDistances.shape, device=device)
-        avoidZero = torch.zeros(groupDistances.shape, device=device) + 0.0000000001
+        angleDistances = torch.zeros(groupDistances.shape)
+        avoidZero = torch.zeros(groupDistances.shape) + 0.0000000001
+
+        for i in range(angleDistances.size(0)):
+            for j in range(angleDistances.size(1)):
+                angleDistances[i,j] = getAngleDistance(angles1[i], angles2[j])
+
+        distances = groupDistances + angleDistances + avoidZero
+
+        distNumpy = distances.cpu().numpy()
+        row_ind, col_ind = linear_sum_assignment(distNumpy, maximize=False)
+
+        return vizMatches(params1, angles1, params2, angles2, row_ind, col_ind)
+
+
+def compareParams(params1, angles1, params2, angles2):
+    """Method to checking the minimal distance between initialized filters and learned ones
+    
+    Euclidean distances are calculated between each filter for parameters other than orientations
+    for orientations, we calculate the arc between both points on the unit circle. Then, the sum of
+    these two distances becomes the distance between two filters. Finally, we use munkre's assignment 
+    algorithm to compute the optimal match (I.E. the one that minizes total distance)   
+
+    parameters:
+        params1 -- first set of parameters compared
+        angles1 -- angles associated to the first set of parameters
+        params2 -- second set of parameters compared
+        angles2 -- angles associated to the second set of parameters
+
+    return: 
+        minimal distance
+    """
+    with torch.no_grad():
+        groupDistances = torch.cdist(params1,params2)
+        angleDistances = torch.zeros(groupDistances.shape)
+        avoidZero = torch.zeros(groupDistances.shape) + 0.0000000001
 
         for i in range(angleDistances.size(0)):
             for j in range(angleDistances.size(1)):
@@ -291,4 +268,8 @@ def compareParamsVisualization(params1,angles1,params2,angles2,device):
         distNumpy = distances.cpu().numpy()
         row_ind, col_ind = linear_sum_assignment(distNumpy, maximize=False)
 
-        return vizMatches(params1,angles1,params2,angles2,row_ind,col_ind,device)
+
+        return distNumpy[row_ind, col_ind].sum()
+
+
+

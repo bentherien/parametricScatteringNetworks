@@ -6,7 +6,7 @@ general:
 
 mlflow:
   tracking_uri: 
-  experiment_name: 'Cifar Experiment'
+  experiment_name: 'Cifar Experiment Test'
 
 dataset:
   name: 'cifar' # choices=['cifar', 'kth', 'x-ray']
@@ -33,6 +33,7 @@ scattering:
   learnable: False # True if learnable
   second_order: False
   architecture: 'scattering'
+  parameterization: 'canonical' #['pixelwise', 'equivariant', 'canonical']
   filter_video: True
   param_distance: True
 

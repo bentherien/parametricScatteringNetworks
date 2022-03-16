@@ -34,7 +34,12 @@ from pathlib import Path
 
 sys.path.append(str(Path.cwd()))
 
-from parametricSN.models.models_utils import compareParams
+from parametricSN.visualization.visualization_utils import compareParams
+
+
+def countLearnableParams(model):
+    return sum(p.numel() for p in model.parameters())
+
 
 def get_context(parameters_file, full_path = False):
     """ Read yaml file that contains experiment parameters.
@@ -194,7 +199,6 @@ def log_mlflow(params, model, test_acc, test_loss, train_acc,
         #save filters 
         try:
             for key in filters_plots_before:
-                
                     mlflow.log_figure(filters_plots_before[key], f'filters_before/{key}.pdf')
                     mlflow.log_figure(filters_plots_after[key], f'filters_after/{key}.pdf')
         except:
@@ -208,15 +212,17 @@ def log_mlflow(params, model, test_acc, test_loss, train_acc,
             mlflow.log_figure(misc_plots[3], f'learnable_parameters/filters_grad.pdf')
             mlflow.log_figure(misc_plots[4], f'learnable_parameters/filter_values.pdf')
             mlflow.log_figure(misc_plots[5], f'learnable_parameters/filter_parameters.pdf')
+            mlflow.log_figure(misc_plots[7], f'learnable_parameters/param_distance.pdf')
+            mlflow.log_figure(misc_plots[9], f'learnable_parameters/lp_init_dekha.pdf')
+            mlflow.log_figure(misc_plots[10], f'learnable_parameters/lp_end_dekha.pdf')
         except:
             pass
 
         mlflow.log_figure(misc_plots[6], f'plot/lr.pdf')
-        mlflow.log_figure(misc_plots[7], f'learnable_parameters/param_distance.pdf')
 
-        if params['scattering']['param_distance']: 
+        if params['scattering']['param_distance'] and params['scattering']['parameterization']=='canonical':
             mlflow.log_figure(misc_plots[8], f'learnable_parameters/param_match_visualization.pdf')
-
+        
 
         # saving all accuracies
         log_csv_file('test_acc.csv', test_acc)
@@ -368,5 +374,9 @@ def logComparison(mlflow_exp_name):
     os.system('rm {}'.format(os.path.join('/tmp',"{}_{}.pt".format('Tight-Frame',mlflow_exp_name))))
     os.system('rm {}'.format(os.path.join('/tmp',"{}_{}.pt".format('Random',mlflow_exp_name))))
 
+
+
+def getExpName(file):
+    return "-".join(file.split("/")[7:])
 
 

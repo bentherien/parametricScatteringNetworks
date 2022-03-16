@@ -2,9 +2,12 @@ import os
 import sys
 sys.path.append(str(os.getcwd()))
 
-from parametricSN.utils.helpers import experiments_cli, experiments_mpCommands
+from parametricSN.utils.helpers import experiments_cli, experiments_mpCommands, getExpName
 
-mlflow_exp_name = os.path.basename(__file__)
+def getExpName(file):
+    return "-".join(file.split("/"))
+    
+mlflow_exp_name = getExpName(__file__)
 
 PROCESS_BATCH_SIZE = 2
 
@@ -37,8 +40,8 @@ if __name__ == '__main__':
 
     commands = []
 
-    for SEED in [207715039, 491659600,737523103,493572006,827192296,877498678,1103100946,1210393663,1277404878,1377264326]:
-        for aa in [(1,"Random"),(1,"Tight-Frame"),(0,"Tight-Frame"),(0,"Random")]:
+    for SEED in [207715039]: #, 491659600,737523103,493572006,827192296,877498678,1103100946,1210393663,1277404878,1377264326]:
+        for aa in [(1,"Tight-Frame")]:#,(0,"Tight-Frame"),(1,"Random"),(0,"Random")]:
             LEARNABLE, INIT = aa
 
             args1 = "-oname {} -olr {} -gseed {} -sl {} -me {} -omaxlr {} -odivf {} -sip {} -dtsn {}".format(

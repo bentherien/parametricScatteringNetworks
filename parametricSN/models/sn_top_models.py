@@ -23,16 +23,14 @@ class sn_MLP(nn.Module):
     """
        Multilayer perceptron fitted for scattering input
     """
-    def __init__(self, num_classes=10, n_coefficients=81, M_coefficient=8, N_coefficient=8, use_cuda=True):
+    def __init__(self, num_classes=10, n_coefficients=81, M_coefficient=8, N_coefficient=8):
         super(sn_MLP,self).__init__()
-        selfnum_classes =num_classes
-        if use_cuda:
-            self.cuda()
+        self.num_classes = num_classes
 
-        fc1=  nn.Linear(int(3*M_coefficient*  N_coefficient*n_coefficients),  512)
+        fc1 =  nn.Linear(int(3*M_coefficient*N_coefficient*n_coefficients), 512)
 
         self.layers = nn.Sequential(
-            nn.BatchNorm2d(self.n_coefficients*3,eps=1e-5,affine=True),
+            nn.BatchNorm2d(self.n_coefficients*3, eps=1e-5, affine=True),
             fc1,
             nn.ReLU(),
             nn.Linear(512, 256),
@@ -48,44 +46,6 @@ class sn_MLP(nn.Module):
         """Forward pass"""
         x = x.view(x.shape[0], -1)
         return self.layers(x)
-
-    def countLearnableParams(self):
-        """Returns the amount of learnable parameters in this model"""
-        count = 0
-        for t in self.parameters():
-            count += t.numel()
-        return count
-
-
-
-class sn_LinearLayer(nn.Module):
-    """
-    Linear layer fitted for scattering input
-    """
-    def __init__(self, num_classes=10, n_coefficients=81, M_coefficient=8, N_coefficient=8, use_cuda=True):
-        super(sn_LinearLayer,self).__init__()
-        self.n_coefficients = n_coefficients
-        self.num_classes = num_classes
-        if use_cuda:
-            self.cuda()
-
-        self.fc1 = nn.Linear(int(3*M_coefficient*  N_coefficient*n_coefficients), num_classes)
-
-        self.bn0 = nn.BatchNorm2d(self.n_coefficients*3,eps=1e-5,affine=True)
-
-
-    def forward(self, x):
-        x = self.bn0(x)
-        x = x.reshape(x.shape[0], -1)
-        x = self.fc1(x)
-        return x
-
-    def countLearnableParams(self):
-        """returns the amount of learnable parameters in this model"""
-        count = 0
-        for t in self.parameters():
-            count += t.numel()
-        return count
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -198,40 +158,24 @@ class sn_CNN(nn.Module):
         x = self.fc(x)
         return x
 
-    def countLearnableParams(self):
-        """returns the amount of learnable parameters in this model"""
-        count = 0
-        for t in self.parameters():
-            count += t.numel()
-        return count
-
 
 class sn_LinearLayer(nn.Module):
     """
     Linear layer fitted for scattering input
     """
-    def __init__(self, num_classes=10, n_coefficients=81, M_coefficient=8, N_coefficient=8, use_cuda=True):
-        super(sn_LinearLayer,self).__init__()
+    def __init__(self, num_classes=10, n_coefficients=81, M_coefficient=8, N_coefficient=8):
+        super(sn_LinearLayer, self).__init__()
         self.n_coefficients = n_coefficients
         self.num_classes = num_classes
-        if use_cuda:
-            self.cuda()
 
-        self.fc1 = nn.Linear(int(3*M_coefficient*  N_coefficient*n_coefficients), num_classes)
-        self.bn0 = nn.BatchNorm2d(self.n_coefficients*3,eps=1e-5,affine=True)
+        self.fc1 = nn.Linear(int(3*M_coefficient*N_coefficient*n_coefficients), num_classes)
+        self.bn0 = nn.BatchNorm2d(self.n_coefficients*3, eps=1e-5, affine=True)
 
     def forward(self, x):
         x = self.bn0(x)
         x = x.reshape(x.shape[0], -1)
         x = self.fc1(x)
         return x
-
-    def countLearnableParams(self):
-        """returns the amount of learnable parameters in this model"""
-        count = 0
-        for t in self.parameters():
-            count += t.numel()
-        return count
 
 
 class sn_Resnet50(nn.Module):
@@ -246,15 +190,7 @@ class sn_Resnet50(nn.Module):
         self.model_ft.fc =  nn.Linear(num_ftrs, num_classes)
         self.num_classes = num_classes
 
-        
     def forward(self, x):
         x = self.model_ft(x)
         return x
 
-    def countLearnableParams(self):
-        """returns the amount of learnable parameters in this model"""
-        count = 0
-        for t in self.model_ft.parameters():
-            count += t.numel()
-        return count
- 

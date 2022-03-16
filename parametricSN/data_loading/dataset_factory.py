@@ -9,7 +9,7 @@ from parametricSN.data_loading.kth_loader import kth_getDataloaders
 from parametricSN.data_loading.xray_loader import xray_getDataloaders
 
 
-def datasetFactory(params, dataDir, use_cuda):
+def datasetFactory(params, dataDir):
     """ Factory for Cifar-10, kth-tips2, and COVID-CRX2 datasets
 
     Creates and returns different dataloaders and datasets based on input

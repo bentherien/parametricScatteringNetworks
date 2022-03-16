@@ -15,11 +15,17 @@ def optimizerFactory(hybridModel, params):
             weight_decay=params['optim']['weight_decay'], amsgrad=False
         )
     elif params['optim']['name'] == 'sgd': 
-        return torch.optim.SGD(
-            hybridModel.parameters(), lr=params['optim']['lr'], 
-            momentum=params['optim']['momentum'], weight_decay=params['optim']['weight_decay']
-        )
-        
+        optim = torch.optim.SGD(
+            hybridModel.top.parameters(), lr=params['optim']['lr'], 
+            momentum=params['optim']['momentum'], weight_decay=params['optim']['weight_decay'])
+
+        optim.add_param_group({ 'params': list(hybridModel.scatteringBase.parameters()),
+                                'lr': params['optim']['lr'], 
+                                'maxi_lr': params['optim']['lr'], 
+                                'momentum': params['optim']['momentum'], 
+                                'weight_decay': 0
+                                })
+        return optim
     else:
         raise NotImplemented(f"Optimizer {params['optim']['name']} not implemented")
 

@@ -104,8 +104,7 @@ def extract_zip(dataset_path, target_path):
     dataset_path = os.path.join(dataset_path,'covidx-cxr2.zip')
     print(f'Extracting zip file: {dataset_path}')
     with ZipFile(file=dataset_path) as zip_file:
-        for file in tqdm(iterable=zip_file.namelist(), total=len(zip_file.namelist())):
-            zip_file.extract(member=file, path=os.path.join(target_path, 'xray'))
+        zip_file.extractall(path=os.path.join(target_path, 'xray'))
     os.remove(dataset_path)
 
 def create_train_folder(df_train, target_path):

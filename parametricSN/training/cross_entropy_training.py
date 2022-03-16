@@ -12,7 +12,6 @@ from sklearn.metrics import classification_report
 
 def test(model, device, test_loader):
     """test method"""
-
     model.eval()
     test_loss = 0
     correct = 0
@@ -33,7 +32,6 @@ def test(model, device, test_loader):
 
 def train(model, device, train_loader, scheduler, optimizer, epoch, accum_step_multiple=None):
     """training method"""
-
     model.train()
     correct = 0
     train_loss = 0
@@ -45,14 +43,10 @@ def train(model, device, train_loader, scheduler, optimizer, epoch, accum_step_m
         output = model(data)
         loss = F.cross_entropy(output, target)
         loss.backward()
-
-        model.scatteringBase.saveFilterGrads(scatteringActive=True) 
         optimizer.step()
-        model.scatteringBase.saveFilterValues(scatteringActive=True) 
 
         if scheduler != None:
             scheduler.step()
-
 
         pred = output.max(1, keepdim=True)[1] # get the index of the max log-probabilityd
         correct += pred.eq(target.view_as(pred)).sum().item()
@@ -60,7 +54,6 @@ def train(model, device, train_loader, scheduler, optimizer, epoch, accum_step_m
     
     train_loss /= len(train_loader.dataset)
     train_accuracy = 100. * correct / len(train_loader.dataset)
-
     
     print('[Model -- {}] Train Epoch: {:>6} Average Loss: {:.6f}, Accuracy: {}/{} ({:.2f}%)'.format(
             model, epoch, train_loss, correct, 
