@@ -7,7 +7,7 @@ This repository contains the code for [Parameteric Scattering Networks](https://
 
 NOTE
 ----------------
-Kymatio updates have since broken the Parametric Scattering Network implementation used in this repo. While we intend to fix this, this tutorial notebook [here](https://colab.research.google.com/drive/1maZ82CuNShC7nwuJYOe460YcbU-n7Yzt?usp=sharing) contains an updated (as of April 2024) implementation of the Parametric Scattering Network, complete with documentation.
+Kymatio updates have since broken the Parametric Scattering Network implementation used in this repo. While we intend to fix this, for now we provide this tutorial notebook [here](https://colab.research.google.com/drive/1maZ82CuNShC7nwuJYOe460YcbU-n7Yzt?usp=sharing) contains an updated (as of April 2024) implementation of the Parametric Scattering Network, complete with documentation.
 
 Citation
 ----------------
