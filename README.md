@@ -11,7 +11,7 @@ Kymatio updates have since broken the Parametric Scattering Network implementati
 
 Citation
 ----------------
-If you found our work useful, please cite our CVPR2022 paper
+If you found our work useful, please cite our CVPR2022 paper:
 
 ```bibtex
 @InProceedings{Gauthier_2022_CVPR,
@@ -189,4 +189,17 @@ Project Organization
     
     
 
+Citation
+----------------
+If you found our work useful, please cite our CVPR2022 paper:
 
+```bibtex
+@InProceedings{Gauthier_2022_CVPR,
+    author    = {Gauthier, Shanel and Th\'erien, Benjamin and Als\`ene-Racicot, Laurent and Chaudhary, Muawiz and Rish, Irina and Belilovsky, Eugene and Eickenberg, Michael and Wolf, Guy},
+    title     = {Parametric Scattering Networks},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2022},
+    pages     = {5749-5758}
+}
+```
