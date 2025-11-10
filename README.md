@@ -1,7 +1,5 @@
  Welcome to Parametric Scattering Networks
 ==============================
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/parametric-scattering-networks/small-data-image-classification-on-cifar-10-2)](https://paperswithcode.com/sota/small-data-image-classification-on-cifar-10-2?p=parametric-scattering-networks)
-                                                              [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/parametric-scattering-networks/small-data-image-classification-on-cifar-10)](https://paperswithcode.com/sota/small-data-image-classification-on-cifar-10?p=parametric-scattering-networks)
                                                               
 This repository contains the code for [Parameteric Scattering Networks](https://arxiv.org/abs/2107.09539). It also contains code to run and test new hybrid architectures for the small sample regime. 
 
